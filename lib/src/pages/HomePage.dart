@@ -30,11 +30,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue,
-      body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          child: _showDeviceContent(),
-          height: MediaQuery.of(context).size.height,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            child: _showDeviceContent(),
+            height: MediaQuery.of(context).size.height,
+          ),
         ),
       ),
     );
@@ -67,19 +69,16 @@ class _HomePageState extends State<HomePage> {
             ]),
       );
     } else {
-      return Padding(
-        padding: const EdgeInsets.only(top: 40.0),
-        child: Column(
-          children: <Widget>[
-            Text("Dispositivo encontrado",
-                style: TextStyle(color: Colors.white, fontSize: 20.0)),
-            Text("${_device.ipAdress}",
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            _showDeviceCards(),
-            _crearBotones(),
-            _showBrightnessCard()
-          ],
-        ),
+      return Column(
+        children: <Widget>[
+          Text("Dispositivo encontrado",
+              style: TextStyle(color: Colors.white, fontSize: 20.0)),
+          Text("${_device.ipAdress}",
+              style: TextStyle(color: Colors.white, fontSize: 12.0)),
+          _showDeviceCards(),
+          _crearBotones(),
+          _showBrightnessCard()
+        ],
       );
     }
   }
