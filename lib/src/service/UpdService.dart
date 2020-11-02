@@ -6,7 +6,7 @@ import 'package:relojcin_binario/src/models/RelojDevice.dart';
 
 class UdpService {
   static searchDevice() async {
-    final _DESTINATION = InternetAddress("255.255.255.255");
+    final _destination = InternetAddress("255.255.255.255");
     final List<RelojDevice> devices = List();
 
     final RawDatagramSocket udpSocket =
@@ -37,7 +37,7 @@ class UdpService {
     });
 
     List<int> data = utf8.encode('Everything is Copacetic');
-    udpSocket.send(data, _DESTINATION, 2400);
+    udpSocket.send(data, _destination, 2400);
 
     print("delay!");
     await Future.delayed(Duration(seconds: 5));
