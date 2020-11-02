@@ -59,4 +59,23 @@ class RelojServices {
     final req = {"key": "sync_hour", "hour": currentHour};
     socket.write(req);
   }
+
+  setBrightness(int percentage, onResponse) async {
+    final socket = await Socket.connect(_ip, _port);
+    socket.listen((data) {
+      onResponse();
+    }, onDone: (){
+      socket.destroy();
+    });
+
+    // Convertir porcentaje a rango de 10 bits (0 - 1023)
+    //100           -  1023
+    //porcentaje    -  x
+    int newVal = 1023 - ((percentage * 1023) / 100).round();
+
+    // Build request
+    final req = {"key": "set_pwm", "value": newVal};
+    print("Sending request $req");
+    socket.write(req);
+  }
 }

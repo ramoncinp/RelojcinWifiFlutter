@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _loading = false;
+  double _brightnessVal = 50;
   String _loadingMessage = "Buscando dispositivo...";
 
   final formKey = GlobalKey<FormState>();
@@ -30,10 +31,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.blue,
       body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            child: _showDeviceContent(),
-          ),
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Container(
+          child: _showDeviceContent(),
+          height: MediaQuery.of(context).size.height,
         ),
       ),
     );
@@ -75,7 +76,8 @@ class _HomePageState extends State<HomePage> {
             Text("${_device.ipAdress}",
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             _showDeviceCards(),
-            _crearBotones()
+            _crearBotones(),
+            _showBrightnessCard()
           ],
         ),
       );
@@ -103,10 +105,16 @@ class _HomePageState extends State<HomePage> {
                     children: <Widget>[
                       Container(
                           width: double.infinity,
-                          child: Text("Datos de dispositivo",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold))),
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.perm_device_information, color: Colors.white,),
+                              SizedBox(width: 8.0),
+                              Text("Datos de dispositivo",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          )),
                       _crearSsid(),
                       _crearPassword(),
                       _crearZonaHoraria(),
@@ -119,6 +127,69 @@ class _HomePageState extends State<HomePage> {
             ),
           ));
     }
+  }
+
+  _showBrightnessCard() {
+    if (_device == null){
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        width: double.infinity,
+        child: Card(
+          color: Colors.indigo,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.brightness_medium, color: Colors.white,),
+                    SizedBox(width: 8.0),
+                    Text("Brillo",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Slider(
+                        value: _brightnessVal,
+                        min: 0,
+                        max: 100,
+                        label: _brightnessVal.round().toString(),
+                        onChanged: (double value){
+                          setState(() {
+                            _brightnessVal = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: 60.0,
+                      height: 40.0,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0)),
+                        color: Colors.green,
+                        onPressed: _onSetBrightness,
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Icon(Icons.check, color: Colors.white),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   _crearSsid() {
@@ -322,6 +393,15 @@ class _HomePageState extends State<HomePage> {
     await relojServices.syncHour(() {
       setState(() {
         _loading = false;
+      });
+    });
+  }
+
+  _onSetBrightness() async {
+    final RelojServices relojServices = RelojServices();
+    await relojServices.setBrightness(_brightnessVal.round(), () {
+      setState(() {
+        print("Brillo modificado!");
       });
     });
   }
